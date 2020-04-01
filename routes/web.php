@@ -14,6 +14,7 @@
 Route::get('/', function () {
     return view('welcome');
 });
-Route::group(['middleware'=>'auth'],function (){
-    Route::post('/set-order','OrderController@setOrder');
-});
+
+
+Route::post('/set-order','OrderController@setOrder')->middleware('auth');
+Route::post('/login','Auth/LoginController@login')->name('login');

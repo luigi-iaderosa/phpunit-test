@@ -26,7 +26,7 @@ class OrderTest extends TestCase
         $articoloSceltoId = factory(Articolo::class)->create(['categoria'=>'A'])->id;
 
 
-        $response = $this->actingAs($user)->post('/set-order',['articolo_id'=>$articoloSceltoId]);
+        $response = $this->actingAs($user)->post('/set-order',['articolo_id'=>$articoloSceltoId,'_token'=>csrf_token()]);
 
         $this->assertCount(1,Ordine::all());
         $response->assertStatus(200);
@@ -65,6 +65,20 @@ class OrderTest extends TestCase
         $response = $this->actingAs($user)->post('/set-order',['articolo_id'=>$articoloSceltoId]);
     }
 
+
+    /**
+     * @test
+     */
+    public function set_order_ko_no_logged_user(){
+        $this->withoutExceptionHandling();
+        $this->expectException(\Exception::class);
+        $customer = factory(Cliente::class)->create(['categoria'=>'A']);
+        $user = User::where('email','=',$customer->email)->first();
+        $customer->email = 'deceptive@email.com';
+        $customer->save();
+        $articoloSceltoId = factory(Articolo::class)->create(['categoria'=>'B'])->id;
+        $response = $this->post('/set-order',['articolo_id'=>$articoloSceltoId]);
+    }
 
 
 

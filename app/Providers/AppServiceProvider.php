@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Cliente;
+use App\Repos\BuilderRepoInterface\OrderRepoBuilderInterface;
 use App\Repos\OrderRepo;
+use App\Repos\RepoBuilders\OrderRepoBuilder;
 use App\Repos\RepoInterfaces\OrderRepoInterface;
 use Illuminate\Support\ServiceProvider;
 
@@ -16,11 +18,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(OrderRepoInterface::class, function($app){
+        $this->app->bind(OrderRepoBuilderInterface::class, function($app){
             $request = app(\Illuminate\Http\Request::class);
-            $user = $request->user();
-            $customer = Cliente::byEmail($user->email);
-            return new OrderRepo($customer,$user);
+            return new OrderRepoBuilder($request);
         });
     }
 
